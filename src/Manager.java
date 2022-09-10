@@ -17,7 +17,7 @@ public class Manager {
 
         if(storageTask.size() != 0) {
             for (Task next : storageTask.values()) {
-                result += next.toString(); //поправить next для получения задачи и переопределить toString()
+                result += next.toString();
             }
             return result;
         } else {
@@ -31,7 +31,7 @@ public class Manager {
 
         if(storageEpic.size() != 0) {
             for (Epic next : storageEpic.values()) {
-                result += next.toString(); //поправить next для получения задачи и переопределить toString()
+                result += next.toString(); 
             }
             return result;
         } else {
