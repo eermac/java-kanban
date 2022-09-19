@@ -6,15 +6,15 @@ public class Task {
     private int Id;
     private String taskName;
     private String description;
-    private final String status;
+    private final TaskStatus status;
 
     public Task(String taskName, String description){
         this.taskName = taskName;
         this.description = description;
-        this.status = "NEW";
+        this.status = TaskStatus.NEW;
     }
 
-    public Task(String taskName, String description, String status){
+    public Task(String taskName, String description, TaskStatus status){
         this.taskName = taskName;
         this.description = description;
         this.status = status;
@@ -43,7 +43,7 @@ public class Task {
         this.description = description;
     }
 
-    public String getStatus(){
+    public TaskStatus getStatus(){
         return this.status;
     }
 

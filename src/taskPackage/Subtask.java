@@ -9,7 +9,7 @@ public class Subtask extends Task {
         super(taskName, description);
     }
 
-    public Subtask(String taskName, String description, String status){
+    public Subtask(String taskName, String description, TaskStatus status){
         super(taskName, description, status);
     }
 

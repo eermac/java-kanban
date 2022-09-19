@@ -12,7 +12,7 @@ public class Epic extends Task {
         this.storageSubtaskId = new ArrayList<>();
     }
 
-    public Epic(String taskName, String description, String status, ArrayList<Integer> storageSubtaskId){
+    public Epic(String taskName, String description, TaskStatus status, ArrayList<Integer> storageSubtaskId){
         super(taskName, description, status);
         this.storageSubtaskId = storageSubtaskId;
     }
@@ -36,9 +36,9 @@ public class Epic extends Task {
             for(int i = 0; i < storageSubtaskId.size(); i++){
                 for(Integer next: storageSubtask.keySet()){
                     if(storageSubtaskId.get(i).equals(next)){
-                        if(storageSubtask.get(next).getStatus().equals("DONE")){
+                        if(storageSubtask.get(next).getStatus().equals(TaskStatus.DONE)){
                             countDoneStatus++;
-                        } else if(storageSubtask.get(next).getStatus().equals("IN_PROGRESS")){
+                        } else if(storageSubtask.get(next).getStatus().equals(TaskStatus.IN_PROGRESS)){
                             countProgressStatus++;
                         }
                     }
@@ -46,10 +46,10 @@ public class Epic extends Task {
             }
 
             if(size == countDoneStatus){
-                Epic updatedEpic = new Epic(getTaskName(), getDescription(), "DONE", getStorageSubtaskId());
+                Epic updatedEpic = new Epic(getTaskName(), getDescription(), TaskStatus.DONE, getStorageSubtaskId());
                 return updatedEpic;
             } else if(size > 0 && countProgressStatus > 0 && size != countDoneStatus){
-                Epic updatedEpic = new Epic(getTaskName(), getDescription(), "IN_PROGRESS", getStorageSubtaskId());
+                Epic updatedEpic = new Epic(getTaskName(), getDescription(), TaskStatus.IN_PROGRESS, getStorageSubtaskId());
                 return updatedEpic;
             } else{
                 return null;

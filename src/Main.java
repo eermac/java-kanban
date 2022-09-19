@@ -1,11 +1,12 @@
-import taskManager.Manager;
+import taskManager.InMemoryTaskManager;
 import taskPackage.Epic;
 import taskPackage.Subtask;
 import taskPackage.Task;
+import taskPackage.TaskStatus;
 
 public class Main {
     public static void main(String[] args) {
-        Manager manager = new Manager();
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
 
         Task product = new Task("Поход в магазин", "Купить продуктов на ужин");
         Task dogWalk = new Task("Погулять с собакой", "Гулять с собакой на площадке");
@@ -17,45 +18,48 @@ public class Main {
         Epic buildHouse = new Epic("Построить дом", "Построить дом на берегу озера");
         Subtask choise = new Subtask("Выбрать место", "Выбрать место для строительства");
 
-        test(manager, product, dogWalk, childGoSchool, buildHouse, schoolBag, schoolPlace, choise);
+        test(inMemoryTaskManager, product, dogWalk, childGoSchool, buildHouse, schoolBag, schoolPlace, choise);
 
    }
 
-   public static void test(Manager manager, Task product, Task dogWalk, Epic childGoSchool, Epic buildHouse, Subtask schoolBag, Subtask schoolPlace, Subtask choise){
+   public static void test(InMemoryTaskManager inMemoryTaskManager, Task product, Task dogWalk, Epic childGoSchool, Epic buildHouse, Subtask schoolBag, Subtask schoolPlace, Subtask choise){
        System.out.println("--------------\nСоздание задач и их вывод");
-       manager.createTask(product);
-       manager.createTask(dogWalk);
-       System.out.println(manager.getAllTask());
+       inMemoryTaskManager.createTask(product);
+       inMemoryTaskManager.createTask(dogWalk);
+       System.out.println(inMemoryTaskManager.getAllTask());
 
        System.out.println("--------------\nСоздание эпиков и их вывод");
-       manager.createEpic(childGoSchool);
-       manager.createEpic(buildHouse);
-       System.out.println(manager.getAllEpic());
+       inMemoryTaskManager.createEpic(childGoSchool);
+       inMemoryTaskManager.createEpic(buildHouse);
+       System.out.println(inMemoryTaskManager.getAllEpic());
 
        System.out.println("--------------\nСоздание подзадач и их вывод");
-       manager.createSubTask(schoolBag, childGoSchool);
-       manager.createSubTask(schoolPlace, childGoSchool);
-       manager.createSubTask(choise, buildHouse);
-       System.out.println(manager.getAllSubtusk());
-       System.out.println(manager.getAllTaskForEpic(childGoSchool));
+       inMemoryTaskManager.createSubTask(schoolBag, childGoSchool);
+       inMemoryTaskManager.createSubTask(schoolPlace, childGoSchool);
+       inMemoryTaskManager.createSubTask(choise, buildHouse);
+       System.out.println(inMemoryTaskManager.getAllSubtusk());
+       System.out.println(inMemoryTaskManager.getAllTaskForEpic(childGoSchool));
 
        System.out.println("--------------\nИзменение статусов и их вывод");
-       manager.updateTask(product, "IN_PROGRESS");
-       System.out.println(manager.getTaskById(100001));
+       inMemoryTaskManager.updateTask(product, TaskStatus.IN_PROGRESS);
+       System.out.println(inMemoryTaskManager.getTaskById(100001));
 
-       manager.updateSubtask(choise, "IN_PROGRESS");
-       System.out.println(manager.getEpicById(100004));
-       System.out.println(manager.getAllTaskForEpic(buildHouse));
+       inMemoryTaskManager.updateSubtask(choise, TaskStatus.IN_PROGRESS);
+       System.out.println(inMemoryTaskManager.getEpicById(100004));
+       System.out.println(inMemoryTaskManager.getAllTaskForEpic(buildHouse));
 
-       manager.updateSubtask(choise, "DONE");
-       System.out.println(manager.getEpicById(100004));
-       System.out.println(manager.getAllTaskForEpic(buildHouse));
+       inMemoryTaskManager.updateSubtask(choise, TaskStatus.DONE);
+       System.out.println(inMemoryTaskManager.getEpicById(100004));
+       System.out.println(inMemoryTaskManager.getAllTaskForEpic(buildHouse));
 
        System.out.println("--------------\nУдаление");
-       manager.removeTask(100002);
-       System.out.println(manager.getAllTask());
+       inMemoryTaskManager.removeTask(100002);
+       System.out.println(inMemoryTaskManager.getAllTask());
 
-       manager.removeEpic(100004);
-       System.out.println(manager.getAllEpic());
+       inMemoryTaskManager.removeEpic(100004);
+       System.out.println(inMemoryTaskManager.getAllEpic());
+
+       System.out.println("--------------\nВывод истории");
+       System.out.println(inMemoryTaskManager.getDefaultHistory().toString());
    }
 }
