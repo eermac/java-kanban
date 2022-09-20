@@ -6,23 +6,22 @@ import taskPackage.TaskStatus;
 
 public class Main {
     public static void main(String[] args) {
-        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
-
-        Task product = new Task("Поход в магазин", "Купить продуктов на ужин");
-        Task dogWalk = new Task("Погулять с собакой", "Гулять с собакой на площадке");
-
-        Epic childGoSchool = new Epic("Собрать ребенка в школу", "Подготовить ребенка к учебному году");
-        Subtask schoolBag = new Subtask("Купить рюкзак", "Купить школьный рюкзак");
-        Subtask schoolPlace = new Subtask("Показать школу", "Показать ребенку где школа");
-
-        Epic buildHouse = new Epic("Построить дом", "Построить дом на берегу озера");
-        Subtask choise = new Subtask("Выбрать место", "Выбрать место для строительства");
-
-        test(inMemoryTaskManager, product, dogWalk, childGoSchool, buildHouse, schoolBag, schoolPlace, choise);
-
+        test();
    }
 
-   public static void test(InMemoryTaskManager inMemoryTaskManager, Task product, Task dogWalk, Epic childGoSchool, Epic buildHouse, Subtask schoolBag, Subtask schoolPlace, Subtask choise){
+   public static void test(){
+       InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+
+       Task product = new Task("Поход в магазин", "Купить продуктов на ужин");
+       Task dogWalk = new Task("Погулять с собакой", "Гулять с собакой на площадке");
+
+       Epic childGoSchool = new Epic("Собрать ребенка в школу", "Подготовить ребенка к учебному году");
+       Subtask schoolBag = new Subtask("Купить рюкзак", "Купить школьный рюкзак");
+       Subtask schoolPlace = new Subtask("Показать школу", "Показать ребенку где школа");
+
+       Epic buildHouse = new Epic("Построить дом", "Построить дом на берегу озера");
+       Subtask choise = new Subtask("Выбрать место", "Выбрать место для строительства");
+
        System.out.println("--------------\nСоздание задач и их вывод");
        inMemoryTaskManager.createTask(product);
        inMemoryTaskManager.createTask(dogWalk);
