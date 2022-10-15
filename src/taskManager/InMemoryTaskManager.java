@@ -9,11 +9,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskManager implements TaskManager, HistoryManager{
+public class InMemoryTaskManager<T> implements TaskManager, HistoryManager{
     HashMap<Integer, Task> storageTask = new HashMap<>();
     HashMap<Integer, Epic> storageEpic = new HashMap<>();
     HashMap<Integer, Subtask> storageSubtask = new HashMap<>();
-    List<Task> taskHistory = new ArrayList<>();
+   // List<Task> taskHistory = new ArrayList<>();
+
+    HashMap<Integer, Node> accessHistory = new HashMap<>();
+
+    InMemoryHistoryManager history = new InMemoryHistoryManager();
 
     int idGenerate = 100000;
 
@@ -156,20 +160,25 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager{
     }
 
     @Override
+    public void remove(int id){
+
+    }
+
+    @Override
     public Task getTaskById(Integer Id){
-        setTaskHistory(storageTask.get(Id));
+        add(storageTask.get(Id));
         return storageTask.get(Id);
     }
 
     @Override
     public Epic getEpicById(Integer Id){
-        setTaskHistory(storageEpic.get(Id));
+        add(storageEpic.get(Id));
         return storageEpic.get(Id);
     }
 
     @Override
     public Subtask getSubtaskById(Integer Id){
-        setTaskHistory(storageSubtask.get(Id));
+        add(storageSubtask.get(Id));
         return storageSubtask.get(Id);
     }
 
@@ -217,29 +226,19 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager{
 
     @Override
     public List<Task> getHistory(){
-        return taskHistory;
-    }
-
-    private void setTaskHistory(Task task){
-        if(taskHistory.size() >= 10){
-            taskHistory.remove(0);
-        }
-
-        taskHistory.add(task);
+        history.getTasks();
+        return history.getHistory();
     }
 
     @Override
     public void add(Task task){
-        if(taskHistory.size() >= 10){
-            taskHistory.remove(0);
+        if(accessHistory.containsKey(task.getId())){
+            history.removeNode(accessHistory.get(task.getId()));
+            history.linkLast(task);
+            accessHistory.put(task.getId(), history.tail);
+        } else {
+            history.linkLast(task);
+            accessHistory.put(task.getId(), history.tail);
         }
-
-        taskHistory.add(task);
     }
-
-    public HistoryManager getDefaultHistory() {
-        InMemoryHistoryManager historyList = new InMemoryHistoryManager(taskHistory);
-        return historyList;
-    }
-
 }
