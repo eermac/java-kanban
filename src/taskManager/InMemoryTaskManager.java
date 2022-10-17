@@ -9,15 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskManager<T> implements TaskManager, HistoryManager{
+public class InMemoryTaskManager implements TaskManager, HistoryManager{
     HashMap<Integer, Task> storageTask = new HashMap<>();
     HashMap<Integer, Epic> storageEpic = new HashMap<>();
     HashMap<Integer, Subtask> storageSubtask = new HashMap<>();
-   // List<Task> taskHistory = new ArrayList<>();
+    HashMap<Integer, InMemoryHistoryManager.Node<Task>> historyMap = new HashMap<>();
 
-    HashMap<Integer, Node> accessHistory = new HashMap<>();
-
-    InMemoryHistoryManager history = new InMemoryHistoryManager();
+    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
     int idGenerate = 100000;
 
@@ -130,11 +128,23 @@ public class InMemoryTaskManager<T> implements TaskManager, HistoryManager{
 
     @Override
     public void removeTask(Integer Id){
+        historyManager.removeNode(historyMap.get(Id));
+        historyMap.remove(Id);
         this.storageTask.remove(Id);
     }
 
     @Override
     public void removeEpic(Integer Id){
+        historyManager.removeNode(historyMap.get(Id));
+        historyMap.remove(Id);
+
+        for(Integer next: this.storageEpic.get(Id).getStorageSubtaskId()){
+            if(historyMap.containsKey(next)){
+                historyManager.removeNode(historyMap.get(next));
+                historyMap.remove(next);
+            }
+        }
+
         this.storageEpic.remove(Id);
     }
 
@@ -157,11 +167,6 @@ public class InMemoryTaskManager<T> implements TaskManager, HistoryManager{
         }
 
         this.storageSubtask.remove(Id);
-    }
-
-    @Override
-    public void remove(int id){
-
     }
 
     @Override
@@ -226,19 +231,25 @@ public class InMemoryTaskManager<T> implements TaskManager, HistoryManager{
 
     @Override
     public List<Task> getHistory(){
-        history.getTasks();
-        return history.getHistory();
+        return null;
     }
 
     @Override
     public void add(Task task){
-        if(accessHistory.containsKey(task.getId())){
-            history.removeNode(accessHistory.get(task.getId()));
-            history.linkLast(task);
-            accessHistory.put(task.getId(), history.tail);
+        if(historyMap.containsKey(task.getId())){
+            historyManager.linkLast(task);
+            historyManager.removeNode(historyMap.get(task.getId()));
+            historyMap.put(task.getId(), historyManager.getTail());
         } else {
-            history.linkLast(task);
-            accessHistory.put(task.getId(), history.tail);
+            historyManager.linkLast(task);
+            historyMap.put(task.getId(), historyManager.getTail());
         }
+    }
+
+    public ArrayList<Task> getDefaultHistory() {
+        return historyManager.getTasks();
+    }
+
+    public void remove(int id){
     }
 }

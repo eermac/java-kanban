@@ -1,4 +1,4 @@
-package Util;
+package util;
 
 import taskManager.HistoryManager;
 import taskManager.InMemoryHistoryManager;

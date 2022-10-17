@@ -6,66 +6,96 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final ArrayList<Task> taskHistory = new ArrayList<>();
-    public Node<Task> head;
-    public Node<Task> tail;
+    private Node<Task> head;
+    private Node<Task> tail;
     private int size = 0;
 
+    public void linkLast(Task task) {
+        if(size == 0){
+            head = new Node<>(null, task, null);
+            tail = head;
+            size++;
+        } else if(size == 1){
+            tail = new Node<>(head, task, null);
+            head.next = tail;
+            size++;
+        } else {
+            final Node<Task> oldTail = tail;
+            final Node<Task> newTail = new Node<>(oldTail, task, null);
 
-    public void linkLast(Task task){
-        final Node<Task> oldTail = tail;
-        final Node<Task> newNode = new Node<>(null, task, oldTail);
-        head = newNode;
-
-        if (oldTail == null)
-            head = newNode;
-        else
-            oldTail.prev = newNode;
-        size++;
+            tail = newTail;
+            oldTail.next = tail;
+            size++;
+        }
     }
 
-    public void getTasks(){
-         Node<Task> pop = head;
-            while(pop.next != null){
-                taskHistory.add(pop.data);
-                pop = pop.next;
+    public ArrayList<Task> getTasks(){
+        ArrayList<Task> test2 = new ArrayList<>();
+        Node<Task> testHead = head;
+
+        if(testHead.next == null){
+            test2.add(testHead.data);
+            return test2;
+        }
+
+            while(true){
+                test2.add(testHead.data);
+                testHead = testHead.next;
+
+                if(testHead.next == null){
+                    test2.add(testHead.data);
+                    break;
+                }
             }
+        return test2;
     }
 
-    public void removeNode(Node node){
-        final Node<Task> qoq = node;
-        qoq.prev = qoq.next;
-        qoq.next = qoq.prev;
-        node.prev = null;
-        node.next = null;
+    public void removeNode(Node node) {
+        if (node.prev == null) {
+            head = node.next;
+            head.prev = null;
+        } else if (node.next == null){
+            tail = node.prev;
+            tail.next = null;
+        } else {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            node.next = null;
+            node.prev = null;
+        }
+
+        size--;
     }
 
-    public void add(Task task){
-        linkLast(task);
+    public Node<Task> getTail() {
+        return tail;
     }
 
     public void remove(int id){
 
     }
 
+    public void add(Task task){
+    }
+
     public List<Task> getHistory() {
-        return taskHistory;
+        return null;
     }
 
     @Override
     public String toString(){
         return "******\nСписок просмотренных задач - " + getHistory();
     }
-}
 
-class Node <Task> {
-    public Task data;
-    public Node<Task> next;
-    public Node<Task> prev;
+    class Node<Task> {
+        public Task data;
+        public Node<Task> next;
+        public Node<Task> prev;
 
-    public Node(Node<Task> prev, Task data, Node<Task> next){
-        this.data = data;
-        this.next = next;
-        this.prev = prev;
+        public Node(Node<Task> prev, Task data, Node<Task> next) {
+            this.data = data;
+            this.next = next;
+            this.prev = prev;
+        }
     }
 }
