@@ -11,21 +11,23 @@ public class InMemoryHistoryManager implements HistoryManager {
     private int size = 0;
 
     public void linkLast(Task task) {
-        if(size == 0){
-            head = new Node<>(null, task, null);
-            tail = head;
-            size++;
-        } else if(size == 1){
-            tail = new Node<>(head, task, null);
-            head.next = tail;
-            size++;
-        } else {
-            final Node<Task> oldTail = tail;
-            final Node<Task> newTail = new Node<>(oldTail, task, null);
+        if(null != task){
+            if(size == 0){
+                head = new Node<>(null, task, null);
+                tail = head;
+                size++;
+            } else if(size == 1){
+                tail = new Node<>(head, task, null);
+                head.next = tail;
+                size++;
+            } else {
+                final Node<Task> oldTail = tail;
+                final Node<Task> newTail = new Node<>(oldTail, task, null);
 
-            tail = newTail;
-            oldTail.next = tail;
-            size++;
+                tail = newTail;
+                oldTail.next = tail;
+                size++;
+            }
         }
     }
 
@@ -51,20 +53,22 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public void removeNode(Node node) {
-        if (node.prev == null) {
-            head = node.next;
-            head.prev = null;
-        } else if (node.next == null){
-            tail = node.prev;
-            tail.next = null;
-        } else {
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
-            node.next = null;
-            node.prev = null;
-        }
+        if(null != node){
+            if (node.prev == null) {
+                head = node.next;
+                head.prev = null;
+            } else if (node.next == null){
+                tail = node.prev;
+                tail.next = null;
+            } else {
+                node.prev.next = node.next;
+                node.next.prev = node.prev;
+                node.next = null;
+                node.prev = null;
+            }
 
-        size--;
+            size--;
+        }
     }
 
     public Node<Task> getTail() {

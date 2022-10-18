@@ -94,118 +94,140 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager{
 
     @Override
     public void createTask(Task object){
-        int id = setId();
+        if(null != object){
+            int id = setId();
 
-        object.setId(id);
-        storageTask.put(id, object);
+            object.setId(id);
+            storageTask.put(id, object);
+        }
     }
 
     @Override
     public void createEpic(Epic object){
-        int id = setId();
+        if(null != object){
+            int id = setId();
 
-        object.setId(id);
-        storageEpic.put(id, object);
+            object.setId(id);
+            storageEpic.put(id, object);
+        }
     }
 
     @Override
     public void createSubTask(Subtask object, Epic storageSubtask){
-        int id = setId();
+        if(null != object & null != storageSubtask){
+            int id = setId();
 
-        object.setId(id);
-        object.setEpicId(storageSubtask.getId());
-        this.storageSubtask.put(id, object);
-        if(storageSubtask.getStorageSubtaskId().isEmpty()){
-            ArrayList<Integer> subtask = new ArrayList<>();
-            subtask.add(id);
-            storageSubtask.setStorageSubtaskId(subtask);
-        } else{
-            ArrayList<Integer> subtask = storageSubtask.getStorageSubtaskId();
-            subtask.add(id);
-            storageSubtask.setStorageSubtaskId(subtask);
+            object.setId(id);
+            object.setEpicId(storageSubtask.getId());
+            this.storageSubtask.put(id, object);
+            if(storageSubtask.getStorageSubtaskId().isEmpty()){
+                ArrayList<Integer> subtask = new ArrayList<>();
+                subtask.add(id);
+                storageSubtask.setStorageSubtaskId(subtask);
+            } else{
+                ArrayList<Integer> subtask = storageSubtask.getStorageSubtaskId();
+                subtask.add(id);
+                storageSubtask.setStorageSubtaskId(subtask);
+            }
         }
     }
 
     @Override
     public void removeTask(Integer Id){
-        historyManager.removeNode(historyMap.get(Id));
-        historyMap.remove(Id);
-        this.storageTask.remove(Id);
+        if(null != Id){
+            historyManager.removeNode(historyMap.get(Id));
+            historyMap.remove(Id);
+            this.storageTask.remove(Id);
+        }
     }
 
     @Override
     public void removeEpic(Integer Id){
-        historyManager.removeNode(historyMap.get(Id));
-        historyMap.remove(Id);
+        if(null != Id){
+            historyManager.removeNode(historyMap.get(Id));
+            historyMap.remove(Id);
 
-        for(Integer next: this.storageEpic.get(Id).getStorageSubtaskId()){
-            if(historyMap.containsKey(next)){
-                historyManager.removeNode(historyMap.get(next));
-                historyMap.remove(next);
+            for(Integer next: this.storageEpic.get(Id).getStorageSubtaskId()){
+                if(historyMap.containsKey(next)){
+                    historyManager.removeNode(historyMap.get(next));
+                    historyMap.remove(next);
+                }
             }
-        }
 
-        this.storageEpic.remove(Id);
+            this.storageEpic.remove(Id);
+        }
     }
 
     @Override
     public void removeSubtask(Integer Id){
-        for(Epic next: storageEpic.values()){
-            for(Integer next2: next.getStorageSubtaskId()){
-                if(Id.equals(next2)){
-                    ArrayList<Integer> newStorageSubtask = next.getStorageSubtaskId();
-                    newStorageSubtask.remove(Id);
-                    next.setStorageSubtaskId(newStorageSubtask);
+        if(null != Id){
+            for(Epic next: storageEpic.values()){
+                for(Integer next2: next.getStorageSubtaskId()){
+                    if(Id.equals(next2)){
+                        ArrayList<Integer> newStorageSubtask = next.getStorageSubtaskId();
+                        newStorageSubtask.remove(Id);
+                        next.setStorageSubtaskId(newStorageSubtask);
 
-                    Object objectEpic = next.changeStatus(this.storageSubtask);
+                        Object objectEpic = next.changeStatus(this.storageSubtask);
 
-                    if(!objectEpic.equals(null)){
-                        storageEpic.put(next.getId(), (Epic) objectEpic);
+                        if(!objectEpic.equals(null)){
+                            storageEpic.put(next.getId(), (Epic) objectEpic);
+                        }
                     }
                 }
             }
-        }
 
-        this.storageSubtask.remove(Id);
+            this.storageSubtask.remove(Id);
+        }
     }
 
     @Override
     public Task getTaskById(Integer Id){
-        add(storageTask.get(Id));
-        return storageTask.get(Id);
+        if(null != Id){
+            add(storageTask.get(Id));
+            return storageTask.get(Id);
+        } else return null;
     }
 
     @Override
     public Epic getEpicById(Integer Id){
-        add(storageEpic.get(Id));
-        return storageEpic.get(Id);
+        if(null != Id){
+            add(storageEpic.get(Id));
+            return storageEpic.get(Id);
+        } else return null;
     }
 
     @Override
     public Subtask getSubtaskById(Integer Id){
-        add(storageSubtask.get(Id));
-        return storageSubtask.get(Id);
+        if(null != Id){
+            add(storageSubtask.get(Id));
+            return storageSubtask.get(Id);
+        } else return null;
     }
 
     @Override
     public void updateTask(Task object, TaskStatus status){
-        Task updatedTask = new Task(object.getTaskName(), object.getDescription(), status);
-        updatedTask.setId(object.getId());
-        this.storageTask.put(object.getId(), updatedTask);
+        if(null != object & null != status){
+            Task updatedTask = new Task(object.getTaskName(), object.getDescription(), status);
+            updatedTask.setId(object.getId());
+            this.storageTask.put(object.getId(), updatedTask);
+        }
     }
 
     @Override
     public void updateSubtask(Subtask object, TaskStatus status){
-        Subtask updatedSubtask = new Subtask(object.getTaskName(), object.getDescription(), status);
-        updatedSubtask.setId(object.getId());
-        this.storageSubtask.put(object.getId(), updatedSubtask);
+        if(null != object & null != status){
+            Subtask updatedSubtask = new Subtask(object.getTaskName(), object.getDescription(), status);
+            updatedSubtask.setId(object.getId());
+            this.storageSubtask.put(object.getId(), updatedSubtask);
 
-        for(Integer next: storageEpic.keySet()){
-            for(Integer next2: storageEpic.get(next).getStorageSubtaskId()){
-                if(next2.equals(object.getId())){
-                    Epic updatedEpic = storageEpic.get(next).changeStatus(storageSubtask);
-                    updatedEpic.setId(storageEpic.get(next).getId());
-                    storageEpic.put(updatedEpic.getId(), updatedEpic);
+            for(Integer next: storageEpic.keySet()){
+                for(Integer next2: storageEpic.get(next).getStorageSubtaskId()){
+                    if(next2.equals(object.getId())){
+                        Epic updatedEpic = storageEpic.get(next).changeStatus(storageSubtask);
+                        updatedEpic.setId(storageEpic.get(next).getId());
+                        storageEpic.put(updatedEpic.getId(), updatedEpic);
+                    }
                 }
             }
         }
@@ -213,20 +235,22 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager{
 
     @Override
     public ArrayList<Subtask> getAllTaskForEpic(Epic object){
-        ArrayList<Subtask> allSubtask = new ArrayList<>();
+        if(null != object){
+            ArrayList<Subtask> allSubtask = new ArrayList<>();
 
-        if(!object.getStorageSubtaskId().isEmpty()) {
-            for (Integer next : object.getStorageSubtaskId()) {
-                for (Integer next2 : storageSubtask.keySet()) {
-                    if (next.equals(next2)) {
-                        allSubtask.add(storageSubtask.get(next2));
+            if(!object.getStorageSubtaskId().isEmpty()) {
+                for (Integer next : object.getStorageSubtaskId()) {
+                    for (Integer next2 : storageSubtask.keySet()) {
+                        if (next.equals(next2)) {
+                            allSubtask.add(storageSubtask.get(next2));
+                        }
                     }
                 }
+                return allSubtask;
+            } else {
+                return null;
             }
-            return allSubtask;
-        } else {
-            return null;
-        }
+        } else return null;
     }
 
     @Override
@@ -236,13 +260,15 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager{
 
     @Override
     public void add(Task task){
-        if(historyMap.containsKey(task.getId())){
-            historyManager.linkLast(task);
-            historyManager.removeNode(historyMap.get(task.getId()));
-            historyMap.put(task.getId(), historyManager.getTail());
-        } else {
-            historyManager.linkLast(task);
-            historyMap.put(task.getId(), historyManager.getTail());
+        if(null != task){
+            if(historyMap.containsKey(task.getId())){
+                historyManager.linkLast(task);
+                historyManager.removeNode(historyMap.get(task.getId()));
+                historyMap.put(task.getId(), historyManager.getTail());
+            } else {
+                historyManager.linkLast(task);
+                historyMap.put(task.getId(), historyManager.getTail());
+            }
         }
     }
 
