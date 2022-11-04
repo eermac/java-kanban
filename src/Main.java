@@ -1,15 +1,27 @@
+import taskManager.FileBackedTasksManager;
 import taskManager.InMemoryTaskManager;
 import taskPackage.Epic;
 import taskPackage.Subtask;
 import taskPackage.Task;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         test2();
+
+
     }
 
-    public static void test2(){
+    public static void test2() throws IOException {
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+
+        Path test_file = Files.createFile(Paths.get("resources", "testFile.csv"));
+
+        FileBackedTasksManager test = new FileBackedTasksManager(test_file);
 
         Task product = new Task("Поход в магазин", "Купить продуктов на ужин");
         Task dogWalk = new Task("Погулять с собакой", "Гулять с собакой на площадке");
@@ -22,34 +34,37 @@ public class Main {
         Epic buildHouse = new Epic("Построить дом", "Построить дом на берегу озера");
 
         System.out.println("--------------\nСоздание задач");
-        inMemoryTaskManager.createTask(product);
-        inMemoryTaskManager.createTask(dogWalk);
+        test.createTask(dogWalk);
+
+        test.createTask(product);
 
         System.out.println("--------------\nСоздание эпиков");
-        inMemoryTaskManager.createEpic(childGoSchool);
-        inMemoryTaskManager.createEpic(buildHouse);
+        test.createEpic(childGoSchool);
+        test.createEpic(buildHouse);
 
         System.out.println("--------------\nСоздание подзадач");
-        inMemoryTaskManager.createSubTask(schoolBag, childGoSchool);
-        inMemoryTaskManager.createSubTask(schoolPlace, childGoSchool);
-        inMemoryTaskManager.createSubTask(schoolFlowers, childGoSchool);
+        test.createSubTask(schoolBag, childGoSchool);
+        test.createSubTask(schoolPlace, childGoSchool);
+        test.createSubTask(schoolFlowers, childGoSchool);
 
-        System.out.println(inMemoryTaskManager.getSubtaskById(100005));
-        System.out.println(inMemoryTaskManager.getTaskById(100001));
-        System.out.println(inMemoryTaskManager.getEpicById(100003)); //epic with 3 subtask
-        System.out.println(inMemoryTaskManager.getSubtaskById(100005));
-        System.out.println(inMemoryTaskManager.getSubtaskById(100006));
-        System.out.println(inMemoryTaskManager.getSubtaskById(100005));
-        System.out.println(inMemoryTaskManager.getSubtaskById(100005));
-        System.out.println(inMemoryTaskManager.getSubtaskById(100006));
-
-
-        System.out.println("--------------\nВывод истории");
-        System.out.println(inMemoryTaskManager.getDefaultHistory().toString());
-
-        inMemoryTaskManager.removeEpic(100003); //delete epic 100003 and subtask on history (100005, 100006)
+        System.out.println(test.getSubtaskById(100005));
+        System.out.println(test.getTaskById(100001));
+        System.out.println(test.getEpicById(100003)); //epic with 3 subtask
+        System.out.println(test.getSubtaskById(100005));
+        System.out.println(test.getSubtaskById(100006));
+        System.out.println(test.getSubtaskById(100005));
+        System.out.println(test.getSubtaskById(100005));
+        System.out.println(test.getSubtaskById(100006));
+        System.out.println(test.getTaskById(100002));
 
         System.out.println("--------------\nВывод истории");
-        System.out.println(inMemoryTaskManager.getDefaultHistory().toString());
+        System.out.println(test.getDefaultHistory().toString());
+
+        test.removeEpic(100003); //delete epic 100003 and subtask on history (100005, 100006)
+
+        System.out.println("--------------\nВывод истории");
+        System.out.println(test.getDefaultHistory().toString());
+
+        System.out.println(Files.readString(Path.of("resources/testFile.csv")));
     }
 }
