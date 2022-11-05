@@ -92,9 +92,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     class Node<Task> {
-        public Task data;
-        public Node<Task> next;
-        public Node<Task> prev;
+        private Task data;
+        private Node<Task> next;
+        private Node<Task> prev;
 
         public Node(Node<Task> prev, Task data, Node<Task> next) {
             this.data = data;

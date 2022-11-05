@@ -11,14 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager, HistoryManager{
-    HashMap<Integer, Task> storageTask = new HashMap<>();
-    HashMap<Integer, Epic> storageEpic = new HashMap<>();
-    HashMap<Integer, Subtask> storageSubtask = new HashMap<>();
-    HashMap<Integer, InMemoryHistoryManager.Node<Task>> historyMap = new HashMap<>();
+    public HashMap<Integer, Task> storageTask = new HashMap<>();
+    public HashMap<Integer, Epic> storageEpic = new HashMap<>();
+    public HashMap<Integer, Subtask> storageSubtask = new HashMap<>();
+    public HashMap<Integer, InMemoryHistoryManager.Node<Task>> historyMap = new HashMap<>();
 
-    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    public InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
-    int idGenerate = 100000;
+    private int idGenerate = 100000;
 
     @Override
     public Integer setId(){

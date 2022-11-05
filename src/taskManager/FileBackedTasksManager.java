@@ -20,7 +20,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         this.filename = filename.toString();
     }
 
-    public void save() { //переименовать переменные
+    public void save() {
         List<Task> test = new ArrayList<>();
 
         for(Task next: super.storageTask.values()){
@@ -95,7 +95,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         save();
     }
 
-    public String toString(Task task) { //проверка на null
+    private String toString(Task task) { //проверка на null
         if(task instanceof Subtask){
             return task.getId() + "," + TaskType.SUBTASK + "," + task.getTaskName() + "," + task.getStatus() + "," + task.getDescription() + "," + ((Subtask) task).getEpicId() + "\n";
         } else if(task instanceof Epic){
@@ -105,7 +105,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         }
     }
 
-    public Task fromString(String value) {
+    private Task fromString(String value) {
         String[] split = value.split(",");
 
         if(split[1].equals("TASK")){
@@ -127,7 +127,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         }
     }
 
-    static String historyToString(HistoryManager manager){
+    private static String historyToString(HistoryManager manager){
         InMemoryHistoryManager taskManager = (InMemoryHistoryManager) manager;
         StringBuilder stringHistory = new StringBuilder();
 
@@ -138,7 +138,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return stringHistory.deleteCharAt(stringHistory.length()-1).toString();
     }
 
-    static List<Integer> historyFromString(String value){
+    private static List<Integer> historyFromString(String value){
         String[] split = value.split(",");
         List<Integer> taskIdList = new ArrayList<>();
 
@@ -149,7 +149,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return taskIdList;
     }
 
-    static FileBackedTasksManager loadFromFile(File file) throws IOException {
+    private static FileBackedTasksManager loadFromFile(File file) throws IOException {
         Path filePath = Paths.get("resources", file.getName());
         String line = Files.readString(Path.of(filePath.toString()));
         FileBackedTasksManager loadManager = new FileBackedTasksManager(filePath);
