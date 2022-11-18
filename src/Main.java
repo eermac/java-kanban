@@ -3,6 +3,7 @@ import taskManager.InMemoryTaskManager;
 import taskPackage.Epic;
 import taskPackage.Subtask;
 import taskPackage.Task;
+import taskPackage.TaskStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,11 +18,11 @@ public class Main {
     }
 
     public static void test2() throws IOException {
-        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        InMemoryTaskManager test = new InMemoryTaskManager();
 
-        Path test_file = Files.createFile(Paths.get("resources", "testFile.csv"));
+       // Path test_file = Files.createFile(Paths.get("resources", "testFile.csv"));
 
-        FileBackedTasksManager test = new FileBackedTasksManager(test_file);
+        //FileBackedTasksManager test = new FileBackedTasksManager(test_file);
 
         Task product = new Task("Поход в магазин", "Купить продуктов на ужин");
         Task dogWalk = new Task("Погулять с собакой", "Гулять с собакой на площадке");
@@ -46,6 +47,8 @@ public class Main {
         test.createSubTask(schoolBag, childGoSchool);
         test.createSubTask(schoolPlace, childGoSchool);
         test.createSubTask(schoolFlowers, childGoSchool);
+
+        test.updateSubtask(schoolBag, TaskStatus.DONE);
 
         System.out.println(test.getSubtaskById(100005));
         System.out.println(test.getTaskById(100001));

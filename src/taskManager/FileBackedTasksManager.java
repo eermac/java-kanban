@@ -9,9 +9,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager{
     private String filename;
@@ -44,7 +44,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         }
 
         try (Writer fileWriter = new FileWriter(this.filename)) {
-                fileWriter.write("id,type,name,status,description,epic\n");
+                fileWriter.write("id,type,name,startTime, duration, endTime, status,description,epic\n");
 
                 for(Task next: test){
                     fileWriter.write(toString(next));
@@ -63,6 +63,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     public void createTask(Task task) {
         super.createTask(task);
         save();
+        tasks.put(task, task.getStartTime().toString());
     }
 
     @Override
@@ -75,7 +76,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     public void createSubTask(Subtask object, Epic storageSubtask){
         super.createSubTask(object, storageSubtask);
         save();
+        tasks.put(object, object.getStartTime().toString());
+
+        if(super.storageSubtask.size() == 1){
+            storageSubtask.setStartTime(object);
+            storageSubtask.setEndTime(object);
+        } else {
+            storageSubtask.setDuration(super.storageSubtask);
+            storageSubtask.setEndTime(object);
+        }
     }
+
+    public List<Task> getPrioritizedTasks(){
+        List<Task> listSortetTask = new ArrayList<>();
+
+        for(Task next: tasks.keySet()){
+            listSortetTask.add(next);
+        }
+
+        return listSortetTask;
+    }
+
 
     @Override
     public void removeTask(Integer Id){
@@ -97,11 +118,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
     private String toString(Task task) { //проверка на null
         if(task instanceof Subtask){
-            return task.getId() + "," + TaskType.SUBTASK + "," + task.getTaskName() + "," + task.getStatus() + "," + task.getDescription() + "," + ((Subtask) task).getEpicId() + "\n";
+            return task.getId() + "," + TaskType.SUBTASK + "," + task.getTaskName() + "," + task.getStartTime() + "," + task.getDuration() + "," + task.getEndTime() + "," + task.getStatus() + "," + task.getDescription() + "," + ((Subtask) task).getEpicId() + "\n";
         } else if(task instanceof Epic){
-            return task.getId() + "," + TaskType.EPIC + "," + task.getTaskName() + "," + task.getStatus() + "," + task.getDescription() + ",\n";
+            return task.getId() + "," + TaskType.EPIC + "," + task.getTaskName() + "," + task.getStartTime() + "," + task.getDuration() + "," + task.getEndTime() + "," + task.getStatus() + "," + task.getDescription() + ",\n";
         } else {
-            return task.getId() + "," + TaskType.TASK+ "," + task.getTaskName() + "," + task.getStatus() + "," + task.getDescription() + ",\n";
+            return task.getId() + "," + TaskType.TASK+ "," + task.getTaskName() + "," + task.getStartTime() + "," + task.getDuration() + "," + task.getEndTime() + "," + task.getStatus() + "," + task.getDescription() + ",\n";
         }
     }
 
@@ -149,7 +170,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return taskIdList;
     }
 
-    private static FileBackedTasksManager loadFromFile(File file) throws IOException {
+    static FileBackedTasksManager loadFromFile(File file) throws IOException {
         Path filePath = Paths.get("resources", file.getName());
         String line = Files.readString(Path.of(filePath.toString()));
         FileBackedTasksManager loadManager = new FileBackedTasksManager(filePath);
@@ -186,11 +207,58 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return loadManager;
     }
 
- public static void main(String[] args) throws IOException {
+    Comparator<Task> userComparator = new Comparator<>() {
+        @Override
+        public int compare(Task user1, Task user2) {
+            if(user1.getStartTime().isAfter(user2.getStartTime())) return 1;
+            else return -1;
+        }
+    };
+
+    Map<Task, String> tasks = new TreeMap<>(userComparator);
+
+
+    public static void main(String[] args) throws IOException {
      Path testFile = Files.createFile(Paths.get("resources", "testFile.csv"));
 
-     testSaveFile(testFile);
-     testRecoverFile(testFile);
+//     testSaveFile(testFile);
+//     testRecoverFile(testFile);
+     testDate(testFile);
+    }
+
+    public static void testDate(Path test_file) throws IOException {
+        FileBackedTasksManager test = new FileBackedTasksManager(test_file);
+
+        Task product = new Task("Поход в магазин", "Купить продуктов на ужин", TaskStatus.NEW, 1000, LocalDateTime.now());
+        Task dogWalk = new Task("Погулять с собакой", "Гулять с собакой на площадке", TaskStatus.NEW, 1500, LocalDateTime.now());
+
+        Epic childGoSchool = new Epic("Собрать ребенка в школу", "Подготовить ребенка к учебному году");
+        Subtask schoolBag = new Subtask("Купить рюкзак", "Купить школьный рюкзак", TaskStatus.NEW, 10000, LocalDateTime.now());
+        Subtask schoolPlace = new Subtask("Показать школу", "Показать ребенку где школа", TaskStatus.NEW, 100, LocalDateTime.now());
+
+        System.out.println("--------------\nСоздание задач");
+        test.createTask(dogWalk);
+        test.createTask(product);
+
+        System.out.println("--------------\nСоздание эпиков");
+        test.createEpic(childGoSchool);
+
+        System.out.println("--------------\nСоздание подзадач");
+        test.createSubTask(schoolBag, childGoSchool);
+        test.createSubTask(schoolPlace, childGoSchool);
+
+        System.out.println("task1 endTime= " + test.getTaskById(100001).getEndTime());
+        System.out.println("task2 endTime= " + test.getTaskById(100002).getEndTime());
+        System.out.println("task3 endTime= " + test.getEpicById(100003).getEndTime());
+        System.out.println("task4 endTime= " + test.getSubtaskById(100004).getEndTime());
+        System.out.println("task5 endTime= " + test.getSubtaskById(100005).getEndTime());
+
+        test.getPrioritizedTasks();
+
+        int i = 1;
+        for(Task next: test.getPrioritizedTasks()){
+            System.out.println("\ntask priority = " + i++ + "\n" + next.toString() + "date = " + next.getStartTime() + "\n");
+        }
     }
 
     public static void testSaveFile(Path test_file) throws IOException {

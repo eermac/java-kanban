@@ -15,9 +15,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager{
     public HashMap<Integer, Epic> storageEpic = new HashMap<>();
     public HashMap<Integer, Subtask> storageSubtask = new HashMap<>();
     public HashMap<Integer, InMemoryHistoryManager.Node<Task>> historyMap = new HashMap<>();
-
     public InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-
     private int idGenerate = 100000;
 
     @Override

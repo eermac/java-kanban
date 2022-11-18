@@ -1,5 +1,6 @@
 package taskPackage;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Subtask extends Task {
@@ -13,6 +14,10 @@ public class Subtask extends Task {
         super(taskName, description, status);
     }
 
+    public Subtask(String taskName, String description, TaskStatus status, long duration, LocalDateTime startTime){
+        super(taskName, description, status, duration, startTime);
+    }
+
     public void setEpicId(int id){
         this.epicId = id;
     }
@@ -20,6 +25,7 @@ public class Subtask extends Task {
     public int getEpicId(){
         return this.epicId;
     }
+
 
     @Override
     public boolean equals(Object obj) {

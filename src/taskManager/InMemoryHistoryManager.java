@@ -4,6 +4,7 @@ import taskPackage.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private Node<Task> head;
@@ -33,23 +34,28 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public ArrayList<Task> getTasks(){
         ArrayList<Task> test2 = new ArrayList<>();
-        Node<Task> testHead = head;
 
-        if(testHead.next == null){
-            test2.add(testHead.data);
+        if(head == null){
             return test2;
-        }
+        } else {
+            Node<Task> testHead = head;
 
-            while(true){
+            if (testHead.next == null) {
+                test2.add(testHead.data);
+                return test2;
+            }
+
+            while (true) {
                 test2.add(testHead.data);
                 testHead = testHead.next;
 
-                if(testHead.next == null){
+                if (testHead.next == null) {
                     test2.add(testHead.data);
                     break;
                 }
             }
-        return test2;
+            return test2;
+        }
     }
 
     public void removeNode(Node node) {
