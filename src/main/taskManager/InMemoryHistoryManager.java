@@ -1,10 +1,9 @@
-package taskManager;
+package main.taskManager;
 
-import taskPackage.Task;
+import main.taskPackage.Task;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private Node<Task> head;
@@ -97,7 +96,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return "******\nСписок просмотренных задач - " + getHistory();
     }
 
-    class Node<Task> {
+    public class Node<Task> {
         private Task data;
         private Node<Task> next;
         private Node<Task> prev;

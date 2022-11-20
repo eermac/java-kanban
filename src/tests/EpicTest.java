@@ -1,8 +1,12 @@
-package taskPackage;
+package tests;
 
+import main.taskManager.InMemoryTaskManager;
+import main.taskPackage.Epic;
+import main.taskPackage.Subtask;
+import main.taskPackage.TaskStatus;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import taskManager.InMemoryTaskManager;
 
 import java.util.ArrayList;
 
@@ -47,11 +51,13 @@ class EpicTest {
 
     @Test
     void testEmptyListSubtask() {
-        assertEquals(childGoSchool.getStatus(), TaskStatus.NEW, "Статусы не совпадают");
+        //a. Пустой список подзадач.
+        Assertions.assertEquals(childGoSchool.getStatus(), TaskStatus.NEW, "Статусы не совпадают");
     }
 
     @Test
     void testOnlyNewStatusListSubtask() {
+        //b. Все подзадачи со статусом NEW.
         final TaskStatus schoolBagStatus = schoolBag.getStatus();
         final TaskStatus schoolPlaceStatus= schoolPlace.getStatus();
 
@@ -62,6 +68,7 @@ class EpicTest {
 
     @Test
     void testOnlyDoneStatusListSubtask() {
+        //c. Все подзадачи со статусом DONE.
         inMemoryTaskManager.updateSubtask(schoolBag, TaskStatus.IN_PROGRESS);
         inMemoryTaskManager.updateSubtask(schoolPlace, TaskStatus.IN_PROGRESS);
         inMemoryTaskManager.updateSubtask(schoolBag, TaskStatus.DONE);
@@ -78,6 +85,7 @@ class EpicTest {
 
     @Test
     void testNewAndDoneStatusListSubtask() {
+        //d. Подзадачи со статусами NEW и DONE.
         inMemoryTaskManager.updateSubtask(schoolBag, TaskStatus.IN_PROGRESS);
         inMemoryTaskManager.updateSubtask(schoolBag, TaskStatus.DONE);
 
@@ -92,6 +100,7 @@ class EpicTest {
 
     @Test
     void testOnlyProgressStatusListSubtask() {
+        //e. Подзадачи со статусом IN_PROGRESS.
         inMemoryTaskManager.updateSubtask(schoolBag, TaskStatus.IN_PROGRESS);
         inMemoryTaskManager.updateSubtask(schoolPlace, TaskStatus.IN_PROGRESS);
 

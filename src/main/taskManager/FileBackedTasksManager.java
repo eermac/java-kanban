@@ -1,15 +1,14 @@
-package taskManager;
+package main.taskManager;
 
-import taskPackage.Epic;
-import taskPackage.Subtask;
-import taskPackage.Task;
-import taskPackage.TaskStatus;
+import main.taskPackage.Task;
+import main.taskPackage.Epic;
+import main.taskPackage.Subtask;
+import main.taskPackage.TaskStatus;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -170,7 +169,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return taskIdList;
     }
 
-    static FileBackedTasksManager loadFromFile(File file) throws IOException {
+    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
         Path filePath = Paths.get("resources", file.getName());
         String line = Files.readString(Path.of(filePath.toString()));
         FileBackedTasksManager loadManager = new FileBackedTasksManager(filePath);

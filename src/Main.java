@@ -1,14 +1,12 @@
-import taskManager.FileBackedTasksManager;
-import taskManager.InMemoryTaskManager;
-import taskPackage.Epic;
-import taskPackage.Subtask;
-import taskPackage.Task;
-import taskPackage.TaskStatus;
+import main.taskManager.InMemoryTaskManager;
+import main.taskPackage.Epic;
+import main.taskPackage.Subtask;
+import main.taskPackage.Task;
+import main.taskPackage.TaskStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) throws IOException {

@@ -1,11 +1,12 @@
-package taskManager;
+package tests;
 
+import main.taskManager.InMemoryTaskManager;
+import main.taskPackage.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import taskPackage.Epic;
-import taskPackage.Subtask;
-import taskPackage.Task;
-import taskPackage.TaskStatus;
+import main.taskPackage.Epic;
+import main.taskPackage.Subtask;
+import main.taskPackage.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;

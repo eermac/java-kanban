@@ -1,9 +1,9 @@
-package util;
+package main.util;
 
-import taskManager.HistoryManager;
-import taskManager.InMemoryHistoryManager;
-import taskManager.InMemoryTaskManager;
-import taskManager.TaskManager;
+import main.taskManager.HistoryManager;
+import main.taskManager.InMemoryHistoryManager;
+import main.taskManager.InMemoryTaskManager;
+import main.taskManager.TaskManager;
 
 public final class Managers {
     static TaskManager getDefault(){

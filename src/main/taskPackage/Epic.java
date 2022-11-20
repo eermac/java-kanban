@@ -1,4 +1,4 @@
-package taskPackage;
+package main.taskPackage;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

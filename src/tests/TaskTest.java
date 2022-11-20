@@ -1,7 +1,8 @@
-package taskPackage;
+package tests;
 
+import main.taskPackage.Task;
+import main.taskPackage.TaskStatus;
 import org.junit.jupiter.api.Test;
-import taskManager.InMemoryTaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
