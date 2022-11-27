@@ -18,6 +18,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     public FileBackedTasksManager(Path filename){
         this.filename = filename.toString();
     }
+    public FileBackedTasksManager(){
+
+    }
 
     public void save() {
         List<Task> test = new ArrayList<>();

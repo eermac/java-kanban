@@ -18,6 +18,10 @@ public class Task {
         this.status = TaskStatus.NEW;
     }
 
+    public Task(){
+        this.status = TaskStatus.NEW;
+    }
+
     public Task(String taskName, String description, TaskStatus status){
         this.taskName = taskName;
         this.description = description;
