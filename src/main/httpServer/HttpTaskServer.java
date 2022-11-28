@@ -4,15 +4,13 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import main.taskManager.FileBackedTasksManager;
-import main.taskManager.InMemoryTaskManager;
 import main.taskPackage.Epic;
 import main.taskPackage.Subtask;
 import main.taskPackage.Task;
-
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,151 +19,129 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-
-public class HttpTaskServer {
+public class HttpTaskServer implements HttpHandler{
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-   // static FileBackedTasksManager manager = new FileBackedTasksManager();
-    static InMemoryTaskManager manager = new InMemoryTaskManager();
+    static FileBackedTasksManager manager = new FileBackedTasksManager();
+    String response;
 
+    Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateSerializer())
+            .create();
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
         HttpServer httpServer = HttpServer.create();
 
         httpServer.bind(new InetSocketAddress(PORT), 0);
-        httpServer.createContext("/tasks", new PostsHandler());
-
+        httpServer.createContext("/tasks", new HttpTaskServer());
         httpServer.start();
 
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
-        //httpServer.stop(1);
+        httpServer.stop(1);
     }
 
-    static class PostsHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-            String response = "";
-            String path = httpExchange.getRequestURI().getPath();
+    @Override
+    public void handle(HttpExchange httpExchange) throws IOException {
+        String path = httpExchange.getRequestURI().getPath();
 
-            Gson gson = new GsonBuilder()
-                    .setPrettyPrinting()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateSerializer())
-                    .create();
+        String[] splitStrings = path.split("/");
+        String endPointAll = splitStrings[splitStrings.length-1];
+        String endPointById = splitStrings[splitStrings.length-2];
+        String endPointEpicSubtasks = splitStrings[splitStrings.length-3] + splitStrings[splitStrings.length-2];
+        String[] splitId = splitStrings[splitStrings.length-1].split("=");
+        int id = Integer.parseInt(splitId[splitId.length -1]);
+        String method = httpExchange.getRequestMethod();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
+        String body = bufferedReader.readLine();
 
-            String[] splitStrings = path.split("/");
-
-            String method = httpExchange.getRequestMethod();
-
-            switch(method){
-                case "GET":
-                    if(splitStrings[splitStrings.length-1].equals("task")){
+        switch(method){
+            case "GET":
+                switch(endPointAll){
+                    case "task":
                         response += gson.toJson(manager.getAllTask());
-                        httpExchange.sendResponseHeaders(200, 0);
                         break;
-                    } else if(splitStrings[splitStrings.length-1].equals("epic")){
+                    case "epic":
                         response += gson.toJson(manager.getAllEpic());
-                        httpExchange.sendResponseHeaders(200, 0);
                         break;
-                    } else if(splitStrings[splitStrings.length-1].equals("subtask")){
+                    case "subtask":
                         response += gson.toJson(manager.getAllSubtusk());
-                        httpExchange.sendResponseHeaders(200, 0);
                         break;
-                    } else if(splitStrings[splitStrings.length-2].equals("task")) {
-                        String[] splitId = splitStrings[splitStrings.length-1].split("=");
-                        response += gson.toJson(manager.getTaskById(Integer.parseInt(splitId[splitId.length-1])));
-                        httpExchange.sendResponseHeaders(200, 0);
-                        break;
-                    } else if(splitStrings[splitStrings.length-2].equals("epic")) {
-                        String[] splitId = splitStrings[splitStrings.length-1].split("=");
-                        response += gson.toJson(manager.getEpicById(Integer.parseInt(splitId[splitId.length-1])));
-                        httpExchange.sendResponseHeaders(200, 0);
-                        break;
-                    } else if(splitStrings[splitStrings.length-2].equals("subtask")) {
-                        String[] splitId = splitStrings[splitStrings.length-1].split("=");
-                        response += gson.toJson(manager.getSubtaskById(Integer.parseInt(splitId[splitId.length-1])));
-                        httpExchange.sendResponseHeaders(200, 0);
-                        break;
-                    } else if(splitStrings[splitStrings.length-3].equals("subtask") & splitStrings[splitStrings.length-2].equals("epic")) {
-                        String[] splitEpicId = splitStrings[splitStrings.length-1].split("=");
-                        response += gson.toJson(manager.getEpicById(manager.getSubtaskById(Integer.parseInt(splitEpicId[splitEpicId.length-1])).getEpicId()));
-                        httpExchange.sendResponseHeaders(200, 0);
-                        break;
-                    } else if(splitStrings[splitStrings.length-1].equals("history")) {
+                    case "history":
                         response += gson.toJson(manager.getDefaultHistory());
-                        httpExchange.sendResponseHeaders(200, 0);
                         break;
-                    } else if(splitStrings[splitStrings.length-1].equals("tasks")) {
-                       // response += gson.toJson(manager.getPrioritizedTasks());
-                        httpExchange.sendResponseHeaders(200, 0);
+                    case "tasks":
+                        response += gson.toJson(manager.getPrioritizedTasks());
                         break;
-                    } else {
-                        httpExchange.sendResponseHeaders(404, 0);
+                }
+                switch(endPointById){
+                    case "task":
+                        response += gson.toJson(manager.getTaskById(id));
                         break;
-                    }
-                case "POST":
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
-                    String body = bufferedReader.readLine();
+                    case "epic":
+                        response += gson.toJson(manager.getEpicById(id));
+                        break;
+                    case "subtask":
+                        response += gson.toJson(manager.getSubtaskById(id));
+                        break;
+                }
+                switch(endPointEpicSubtasks){
+                    case "subtaskepic":
+                        response += gson.toJson(manager.getEpicById(id).getStorageSubtaskId());
+                        break;
+                }
 
-                    if(splitStrings[splitStrings.length-1].equals("task")){
-                        Task test = gson.fromJson(body, Task.class);
-                        manager.createTask(test);
-                        httpExchange.sendResponseHeaders(201, -1);
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                break;
+            case "POST":
+                switch(endPointAll) {
+                    case "task":
+                        manager.createTask(gson.fromJson(body, Task.class));
                         break;
-                    } else if(splitStrings[splitStrings.length-1].equals("epic")) {
-                        Task task = gson.fromJson(body, Task.class);
-                        Epic epic = new Epic(task.getTaskName(), task.getDescription());
-                        manager.createEpic(epic);
-                        httpExchange.sendResponseHeaders(201, -1);
+                    case "epic":
+                        manager.createEpic(gson.fromJson(body, Epic.class));
                         break;
-                    } else if(splitStrings[splitStrings.length-2].equals("subtask")) {
-                        String[] splitEpicId = splitStrings[splitStrings.length-1].split("=");
-                        Task task = gson.fromJson(body, Task.class);
-                        Subtask subtask = new Subtask(task.getTaskName(), task.getDescription());
-                        manager.createSubTask(subtask, manager.getEpicById(Integer.parseInt(splitEpicId[splitEpicId.length-1])));
-                        httpExchange.sendResponseHeaders(201, -1);
+                }
+                switch(endPointById) {
+                    case "subtask":
+                        manager.createSubTask(gson.fromJson(body, Subtask.class), manager.getEpicById(id));
                         break;
-                    } else {
-                        httpExchange.sendResponseHeaders(404, 0);
-                        break;
-                    }
-                case "DELETE":
-                    if(splitStrings[splitStrings.length-1].equals("task")){
+                }
+
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_CREATED, -1);
+                break;
+            case "DELETE":
+                switch(endPointAll) {
+                    case "task":
                         manager.removeAllTask();
-                        httpExchange.sendResponseHeaders(204, 0);
                         break;
-                    } else if(splitStrings[splitStrings.length-1].equals("epic")){
+                    case "epic":
                         manager.removeAllEpic();
-                        httpExchange.sendResponseHeaders(204, 0);
                         break;
-                    } else if(splitStrings[splitStrings.length-1].equals("subtask")){
+                    case "subtask":
                         manager.removeAllSubtask();
-                        httpExchange.sendResponseHeaders(204, 0);
                         break;
-                    } else if(splitStrings[splitStrings.length-2].equals("task")) {
-                        String[] splitId = splitStrings[splitStrings.length-1].split("=");
-                        manager.removeTask(Integer.parseInt(splitId[splitId.length-1]));
-                        httpExchange.sendResponseHeaders(204, -1);
+                }
+                switch(endPointById) {
+                    case "task":
+                        manager.removeTask(id);
                         break;
-                    } else if(splitStrings[splitStrings.length-2].equals("epic")) {
-                        String[] splitId = splitStrings[splitStrings.length-1].split("=");
-                        manager.removeEpic(Integer.parseInt(splitId[splitId.length-1]));
-                        httpExchange.sendResponseHeaders(204, -1);
+                    case "epic":
+                        manager.removeEpic(id);
                         break;
-                    } else if(splitStrings[splitStrings.length-2].equals("subtask")) {
-                        String[] splitId = splitStrings[splitStrings.length-1].split("=");
-                        manager.removeSubtask(Integer.parseInt(splitId[splitId.length-1]));
-                        httpExchange.sendResponseHeaders(204, -1);
+                    case "subtask":
+                        manager.removeSubtask(id);
                         break;
-                    } else {
-                        httpExchange.sendResponseHeaders(404, 0);
-                        break;
-                    }
-            }
-            try (OutputStream os = httpExchange.getResponseBody()) {
-                os.write(response.getBytes(DEFAULT_CHARSET));
-            }
+                }
 
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NO_CONTENT, -1);
+                break;
+            default:
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, 0);
+                break;
+        }
+        try (OutputStream os = httpExchange.getResponseBody()) {
+            os.write(response.getBytes(DEFAULT_CHARSET));
         }
     }
 }

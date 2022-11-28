@@ -1,6 +1,7 @@
-package main.HttpClient;
+package main.httpClient;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -22,7 +23,7 @@ public class KVTaskClient {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
                 this.apiToken = response.body();
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
@@ -44,13 +45,12 @@ public class KVTaskClient {
 
             int status = response.statusCode();
 
-            if(status >= 200 && status <= 299) {
+            if(status <= HttpURLConnection.HTTP_ACCEPTED | status >= HttpURLConnection.HTTP_OK) {
                 System.out.println("Сервер успешно обработал запрос. Код состояния: " + status);
-                return;
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + status);
             }
-        } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
+        } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса ресурса по url-адресу: '" + url + "' возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
@@ -66,7 +66,7 @@ public class KVTaskClient {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
                 return response.body();
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());

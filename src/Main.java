@@ -1,18 +1,30 @@
+import main.httpServer.KVServer;
+import main.taskManager.HttpTaskManager;
 import main.taskManager.InMemoryTaskManager;
+import main.taskManager.TaskManager;
 import main.taskPackage.Epic;
 import main.taskPackage.Subtask;
 import main.taskPackage.Task;
 import main.taskPackage.TaskStatus;
+import main.util.Managers;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        test2();
+        test3();
+    }
 
+    public static void test3() throws IOException {
+        new KVServer().start();
+        HttpTaskManager manager = Managers.getDefault();
+        Task product = new Task("Поход в магазин", "Купить продуктов на ужин", TaskStatus.NEW, 1000, LocalDateTime.now());
 
+        manager.createTask(product);
+        System.out.println(manager.getClient().load("100001"));
     }
 
     public static void test2() throws IOException {

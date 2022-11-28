@@ -1,13 +1,11 @@
 package main.util;
 
-import main.taskManager.HistoryManager;
-import main.taskManager.InMemoryHistoryManager;
-import main.taskManager.InMemoryTaskManager;
-import main.taskManager.TaskManager;
+import main.taskManager.*;
+import main.taskPackage.Task;
 
 public class Managers {
-     public TaskManager getDefault(){
-        TaskManager manager = new InMemoryTaskManager();
+     public static HttpTaskManager getDefault(){
+        HttpTaskManager manager = new HttpTaskManager("http://localhost:8078");
         return manager;
     }
 
